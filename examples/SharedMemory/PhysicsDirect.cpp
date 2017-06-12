@@ -64,9 +64,15 @@ struct PhysicsDirectInternalData
 	PhysicsDirectInternalData()
 		:m_hasStatus(false),
 		m_verboseOutput(false),
+		m_cachedCameraPixelsWidth(0),
+		m_cachedCameraPixelsHeight(0),
+		m_commandProcessor(NULL),
 		m_ownsCommandProcessor(false),
 		m_timeOutInSeconds(1e30)
 	{
+		memset(&m_command, 0, sizeof(m_command));
+		memset(&m_serverStatus, 0, sizeof(m_serverStatus));
+		memset(m_bulletStreamDataServerToClient, 0, sizeof(m_bulletStreamDataServerToClient));
 	}
 };
 
@@ -835,6 +841,7 @@ void PhysicsDirect::postProcessStatus(const struct SharedMemoryStatus& serverCmd
 		}
 		break;
 	}
+	case CMD_CREATE_MULTI_BODY_COMPLETED:
 	case CMD_URDF_LOADING_COMPLETED:
 	{
 
@@ -881,6 +888,33 @@ void PhysicsDirect::postProcessStatus(const struct SharedMemoryStatus& serverCmd
 		b3Warning("createConstraint failed");
 		break;
 	}
+	
+	case CMD_CREATE_COLLISION_SHAPE_FAILED:
+	{
+		b3Warning("createCollisionShape failed");
+		break;
+	}
+	case CMD_CREATE_COLLISION_SHAPE_COMPLETED:
+	{
+		break;
+	}
+	
+	case CMD_CREATE_VISUAL_SHAPE_FAILED:
+	{
+		b3Warning("createVisualShape failed");
+		break;
+	}
+	case CMD_CREATE_VISUAL_SHAPE_COMPLETED:
+	{
+		break;
+	}
+	
+	case CMD_CREATE_MULTI_BODY_FAILED:
+	{
+		b3Warning("createMultiBody failed");
+		break;
+	}
+	
 	default:
 	{
 		//b3Warning("Unknown server status type");
